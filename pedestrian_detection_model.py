@@ -1,4 +1,4 @@
-# 2023 - PedestrianDetectionModel - PedestrianDetection.py - Group 27
+# 2023 - PedestrianDetectionModel - pedestrian_detection_model.py - Group 27
 
 import torch
 import argparse
