@@ -1,0 +1,37 @@
+<annotation>
+	<folder>imgs Kaue</folder>
+	<filename>165.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3264</width>
+		<height>1836</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>iron_man</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>842</xmin>
+			<ymin>470</ymin>
+			<xmax>937</xmax>
+			<ymax>681</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>red_juice</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2442</xmin>
+			<ymin>1070</ymin>
+			<xmax>2537</xmax>
+			<ymax>1360</ymax>
+		</bndbox>
+	</object>
+</annotation>

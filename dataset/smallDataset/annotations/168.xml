@@ -1,0 +1,37 @@
+<annotation>
+	<folder>imgs Kaue</folder>
+	<filename>168.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3264</width>
+		<height>1836</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cereal</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1152</xmin>
+			<ymin>812</ymin>
+			<xmax>1805</xmax>
+			<ymax>1381</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>heineken</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1815</xmin>
+			<ymin>628</ymin>
+			<xmax>2037</xmax>
+			<ymax>928</ymax>
+		</bndbox>
+	</object>
+</annotation>

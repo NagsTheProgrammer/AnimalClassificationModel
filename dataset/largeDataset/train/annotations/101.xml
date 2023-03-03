@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>101.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/101.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>crackers</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1024</xmin>
+			<ymin>810</ymin>
+			<xmax>3700</xmax>
+			<ymax>2387</ymax>
+		</bndbox>
+	</object>
+</annotation>

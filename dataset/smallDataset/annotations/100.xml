@@ -1,0 +1,37 @@
+<annotation>
+	<folder>images</folder>
+	<filename>100.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4032</width>
+		<height>3024</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cereal</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>901</xmin>
+			<ymin>1347</ymin>
+			<xmax>1360</xmax>
+			<ymax>2023</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>iron_man</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3207</xmin>
+			<ymin>1429</ymin>
+			<xmax>3548</xmax>
+			<ymax>2076</ymax>
+		</bndbox>
+	</object>
+</annotation>

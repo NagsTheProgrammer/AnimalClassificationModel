@@ -1,0 +1,25 @@
+<annotation>
+	<folder>imgs Kaue</folder>
+	<filename>175.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3264</width>
+		<height>1836</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>iron_man</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1815</xmin>
+			<ymin>107</ymin>
+			<xmax>2337</xmax>
+			<ymax>1591</ymax>
+		</bndbox>
+	</object>
+</annotation>

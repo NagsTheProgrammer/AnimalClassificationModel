@@ -1,0 +1,25 @@
+<annotation>
+	<folder>imgs Kaue</folder>
+	<filename>163.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3264</width>
+		<height>1836</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>milk_bottle</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1584</xmin>
+			<ymin>528</ymin>
+			<xmax>1700</xmax>
+			<ymax>791</ymax>
+		</bndbox>
+	</object>
+</annotation>

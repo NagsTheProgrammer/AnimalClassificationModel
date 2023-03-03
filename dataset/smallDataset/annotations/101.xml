@@ -1,0 +1,37 @@
+<annotation>
+	<folder>imgs Pedro</folder>
+	<filename>101.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4032</width>
+		<height>3024</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cereal</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>789</xmin>
+			<ymin>1823</ymin>
+			<xmax>1307</xmax>
+			<ymax>2453</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>iron_man</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3060</xmin>
+			<ymin>1765</ymin>
+			<xmax>3424</xmax>
+			<ymax>2312</ymax>
+		</bndbox>
+	</object>
+</annotation>

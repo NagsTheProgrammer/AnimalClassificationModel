@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>361.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/361.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>scrubby</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>341</xmin>
+			<ymin>645</ymin>
+			<xmax>1835</xmax>
+			<ymax>1500</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>potato_chips</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>841</xmin>
+			<ymin>1</ymin>
+			<xmax>4126</xmax>
+			<ymax>750</ymax>
+		</bndbox>
+	</object>
+</annotation>

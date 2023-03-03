@@ -1,0 +1,64 @@
+item {
+  id: 1
+  name: 'medicine'
+}
+
+item {
+  id: 2
+  name: 'chocolate_milk'
+}
+
+item {
+  id: 3
+  name: 'heineken'
+}
+
+item {
+  id: 4
+  name: 'yellow_juice'
+}
+
+item {
+  id: 5
+  name: 'red_juice'
+}
+
+item {
+  id: 6
+  name: 'purple_juice'
+}
+
+item {
+  id: 7
+  name: 'milk_bottle'
+}
+
+item {
+  id: 8
+  name: 'milk_box'
+}
+
+item {
+  id: 9
+  name: 'cereal'
+}
+
+item {
+  id: 10
+  name: 'iron_man'
+}
+
+item {
+  id: 11
+  name: 'shampoo'
+}
+
+item {
+  id: 12
+  name: 'monster'
+}
+
+item {
+  id: 13
+  name: 'tea_box'
+}

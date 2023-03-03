@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>379.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/379.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>scrubby</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3074</xmin>
+			<ymin>1945</ymin>
+			<xmax>4486</xmax>
+			<ymax>3474</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>sponge_opl</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2085</xmin>
+			<ymin>1</ymin>
+			<xmax>3785</xmax>
+			<ymax>1139</ymax>
+		</bndbox>
+	</object>
+</annotation>

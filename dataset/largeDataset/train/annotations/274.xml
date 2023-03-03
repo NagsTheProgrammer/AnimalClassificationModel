@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>274.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/274.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3474</width>
+		<height>4632</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>paprika</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1004</xmin>
+			<ymin>3055</ymin>
+			<xmax>2011</xmax>
+			<ymax>4133</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>potato_chips</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1811</xmin>
+			<ymin>626</ymin>
+			<xmax>3418</xmax>
+			<ymax>2941</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>169.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/169.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3474</width>
+		<height>4632</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>sprite</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>540</xmin>
+			<ymin>1819</ymin>
+			<xmax>1654</xmax>
+			<ymax>3612</ymax>
+		</bndbox>
+	</object>
+</annotation>
