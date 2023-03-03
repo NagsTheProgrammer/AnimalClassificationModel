@@ -16,9 +16,9 @@ if __name__ == "__main__":
     parser.add_argument('--best_model_path', type=str, help='best model path')
     parser.add_argument('--images_path', type=str, help='path to images')
     parser.add_argument('--verbose', type=bool, default=True, help='verbose debugging flag')
-    parser.add_argument('--transfer_learning', type=bool, default=False, help='transfer learning flag')
+    parser.add_argument('--transfer_learning', type=bool, default=True, help='transfer learning flag')
 
-    args = parser.parse_args()
+    args = parser.parse_args("")
 
     # Check if GPU is available
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
