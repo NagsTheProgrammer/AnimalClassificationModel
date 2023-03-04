@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>193.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/193.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3472</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>chocolate_drink</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1102</xmin>
+			<ymin>599</ymin>
+			<xmax>4632</xmax>
+			<ymax>2694</ymax>
+		</bndbox>
+	</object>
+</annotation>

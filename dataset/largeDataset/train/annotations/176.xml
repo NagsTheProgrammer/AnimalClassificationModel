@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>176.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/176.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3474</width>
+		<height>4632</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>coke</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>747</xmin>
+			<ymin>1933</ymin>
+			<xmax>2090</xmax>
+			<ymax>4241</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>basket</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>161</xmin>
+			<ymin>912</ymin>
+			<xmax>2675</xmax>
+			<ymax>2155</ymax>
+		</bndbox>
+	</object>
+</annotation>

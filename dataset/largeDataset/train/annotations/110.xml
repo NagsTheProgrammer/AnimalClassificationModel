@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>110.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/110.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>crackers</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>829</xmin>
+			<ymin>522</ymin>
+			<xmax>2335</xmax>
+			<ymax>1457</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>sausages</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3106</xmin>
+			<ymin>1528</ymin>
+			<xmax>4088</xmax>
+			<ymax>2675</ymax>
+		</bndbox>
+	</object>
+</annotation>

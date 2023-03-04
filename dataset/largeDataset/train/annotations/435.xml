@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>435.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/435.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>apple</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3685</xmin>
+			<ymin>467</ymin>
+			<xmax>4280</xmax>
+			<ymax>1050</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>potato_chips</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>991</xmin>
+			<ymin>278</ymin>
+			<xmax>3169</xmax>
+			<ymax>2978</ymax>
+		</bndbox>
+	</object>
+</annotation>

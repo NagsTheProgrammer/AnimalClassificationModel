@@ -1,0 +1,37 @@
+<annotation>
+	<folder>imgs Pedro</folder>
+	<filename>113.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4032</width>
+		<height>3024</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cereal</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2260</xmin>
+			<ymin>1088</ymin>
+			<xmax>2636</xmax>
+			<ymax>1688</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>heineken</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1236</xmin>
+			<ymin>1147</ymin>
+			<xmax>1466</xmax>
+			<ymax>1529</ymax>
+		</bndbox>
+	</object>
+</annotation>

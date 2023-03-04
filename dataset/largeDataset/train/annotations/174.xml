@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>174.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/174.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>3474</width>
+		<height>4632</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>coke</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1211</xmin>
+			<ymin>1948</ymin>
+			<xmax>2483</xmax>
+			<ymax>4119</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>418.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/418.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cloth_opl</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1296</xmin>
+			<ymin>56</ymin>
+			<xmax>4541</xmax>
+			<ymax>2506</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>67.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/67.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>cereal</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2605</xmin>
+			<ymin>367</ymin>
+			<xmax>3993</xmax>
+			<ymax>2111</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>orange</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>1678</ymin>
+			<xmax>1032</xmax>
+			<ymax>2678</ymax>
+		</bndbox>
+	</object>
+</annotation>

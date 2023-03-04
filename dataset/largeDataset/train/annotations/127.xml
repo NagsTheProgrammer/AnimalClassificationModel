@@ -1,0 +1,38 @@
+<annotation>
+	<folder>images</folder>
+	<filename>127.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/127.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>chocolate_drink</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1447</xmin>
+			<ymin>340</ymin>
+			<xmax>2212</xmax>
+			<ymax>2181</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>coke</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3218</xmin>
+			<ymin>1204</ymin>
+			<xmax>4106</xmax>
+			<ymax>2728</ymax>
+		</bndbox>
+	</object>
+</annotation>

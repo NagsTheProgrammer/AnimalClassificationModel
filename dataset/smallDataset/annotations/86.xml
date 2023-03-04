@@ -1,0 +1,25 @@
+<annotation>
+	<folder>imgs Amanda</folder>
+	<filename>86.jpg</filename>
+		<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>5312</width>
+		<height>3984</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>chocolate_milk</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3109</xmin>
+			<ymin>1992</ymin>
+			<xmax>3422</xmax>
+			<ymax>2486</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>371.jpg</filename>
+	<path>/home/dodo/Objetos RoboCup 2018/images/371.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4632</width>
+		<height>3474</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>scrubby</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1880</xmin>
+			<ymin>1478</ymin>
+			<xmax>3569</xmax>
+			<ymax>3300</ymax>
+		</bndbox>
+	</object>
+</annotation>
