@@ -12,7 +12,6 @@ from torch.optim.lr_scheduler import ExponentialLR
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-
 # Function to get the statistics of a dataset
 def get_dataset_stats(data_loader):
     mean = 0.
@@ -52,7 +51,7 @@ class TorchVisionDataset(Dataset):
 
 
 class GarbageModel(nn.Module):
-    def __init__(self,  num_classes, input_shape, transfer=False):
+    def __init__(self, num_classes, input_shape, transfer=False):
         super().__init__()
 
         self.transfer = transfer
@@ -82,11 +81,11 @@ class GarbageModel(nn.Module):
 
     # will be used during inference
     def forward(self, x):
-       x = self.feature_extractor(x)
-       x = x.view(x.size(0), -1)
-       x = self.classifier(x)
-       
-       return x
+        x = self.feature_extractor(x)
+        x = x.view(x.size(0), -1)
+        x = self.classifier(x)
+
+        return x
 
 
 def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=True):
@@ -108,30 +107,29 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     # Listing the data
     # Cats
     print("LISTING DATA")
-    #print(os.listdir("dataset"))
+    # print(os.listdir("dataset"))
     input_dir = "dataset/temp/cats"
-    #images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
+    # images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
     images = [os.path.join(input_dir, image) for image in os.listdir(input_dir)]
     cat_images = np.array(images)  # transform to numpy
-    cat_labels = ['cat']*len(cat_images)
+    cat_labels = ['cat'] * len(cat_images)
 
     # Dogs
     input_dir2 = "dataset/temp/dogs"
-    #images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
+    # images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
     images2 = [os.path.join(input_dir2, image) for image in os.listdir(input_dir2)]
     dog_images = np.array(images2)  # transform to numpy
-    dog_labels = ['dog']*len(dog_images)
+    dog_labels = ['dog'] * len(dog_images)
 
     # Panda
     input_dir3 = "dataset/temp/panda"
-    #images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
+    # images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
     images3 = [os.path.join(input_dir3, image) for image in os.listdir(input_dir3)]
     panda_images = np.array(images3)  # transform to numpy
-    panda_labels = ['panda']*len(panda_images)
+    panda_labels = ['panda'] * len(panda_images)
 
     # Appending lists
-    images2 = np.append(cat_images,dog_images)
-    images = np.append(images2, panda_images)
+    images = np.append(np.append(cat_images, dog_images), panda_images)
     labels = cat_labels + dog_labels + panda_labels
     print(len(labels))
     labels = np.array(labels)
@@ -141,14 +139,14 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     labels_int = np.zeros(labels.size, dtype=np.int64)
 
     # Convert string labels to integers
-    for ii, jj in enumerate(classes):
-        labels_int[labels == jj] = ii
+    for index, class_name in enumerate(classes):
+        labels_int[labels == class_name] = index
 
     if verbose:
         print("Number of images in the dataset:", len(images))
-        for ii, jj in enumerate(classes):
-            print("Number of images in class ", jj,
-                  ":", (labels_int == ii).sum())
+        for index, class_name in enumerate(classes):
+            print("Number of images in class ", class_name,
+                  ":", (labels_int == index).sum())
 
     # Splitting the data in dev and test sets
     sss = StratifiedShuffleSplit(
@@ -163,8 +161,8 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     test_labels = labels_int[test_index]
 
     # Splitting the data in train and val sets
-    val_size = int(val_split*images.size)
-    val_split = val_size/dev_images.size
+    val_size = int(val_split * images.size)
+    val_split = val_size / dev_images.size
     sss2 = StratifiedShuffleSplit(
         n_splits=1, test_size=val_split, random_state=10)
     sss2.get_n_splits(dev_images, dev_labels)
@@ -178,11 +176,11 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     if verbose:
         print("Train set:", train_images.size)
-        #print(train_labels)
+        # print(train_labels)
         print("Val set:", val_images.size)
-        #print(val_labels)
+        # print(val_labels)
         print("Test set:", test_images.size)
-        #print(test_labels)
+        # print(test_labels)
 
     # Representing the sets as dictionaries
     train_set = {"X": train_images, "Y": train_labels}
@@ -191,7 +189,8 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     # Transforms
     torchvision_transform_train = transforms.Compose([transforms.Resize((640, 640)),
-                                                      transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
+                                                      transforms.RandomHorizontalFlip(),
+                                                      transforms.RandomVerticalFlip(),
                                                       transforms.ToTensor()])
 
     # Datasets
@@ -201,7 +200,7 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     # Get training set stats
     trainloader_unorm = torch.utils.data.DataLoader(
         train_dataset_unorm, batch_size=batch_size, shuffle=True, num_workers=0)
-    
+
     mean_train, std_train = get_dataset_stats(trainloader_unorm)
 
     if verbose:
@@ -211,10 +210,12 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     torchvision_transform = transforms.Compose([transforms.Resize((640, 640)),
                                                 transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
-                                                transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
+                                                transforms.ToTensor(),
+                                                transforms.Normalize(mean=mean_train, std=std_train)])
 
     torchvision_transform_test = transforms.Compose([transforms.Resize((640, 640)),
-                                                     transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
+                                                     transforms.ToTensor(),
+                                                     transforms.Normalize(mean=mean_train, std=std_train)])
 
     # Get the train/val/test loaders
     train_dataset = TorchVisionDataset(
@@ -235,9 +236,8 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
 def train_validate(net, trainloader, valloader, epochs, batch_size,
                    learning_rate, best_model_path, device, verbose):
-
     best_loss = 1e+20
-    for epoch in range(epochs):  # loop over the dataset multiple times
+    for epoch in range(20):  # loop over the dataset multiple times
 
         # Loss function and optimizer
         criterion = nn.CrossEntropyLoss()  # Loss function
@@ -260,7 +260,7 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
             optimizer.step()
 
             train_loss += loss.item()
-        print(f'{epoch + 1},  train loss: {train_loss / i:.3f},', end=' ')
+        print(f'{20 + 1},  train loss: {train_loss / i:.3f},', end=' ')
         scheduler.step()
 
         val_loss = 0
@@ -285,7 +285,6 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
 
 
 def test(net, testloader, device):
-
     correct = 0
     total = 0
     print(len(testloader))
