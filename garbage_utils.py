@@ -185,18 +185,20 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     test_set = {"X": test_images, "Y": test_labels}
 
     # Transforms
-    torchvision_transform_train = transforms.Compose([transforms.Resize((224, 224)),
+    torchvision_transform_train = transforms.Compose([transforms.Resize((640, 640)),
                                                       transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
                                                       transforms.ToTensor()])
 
     # Datasets
     train_dataset_unorm = TorchVisionDataset(
         train_set, transform=torchvision_transform_train)
-    print(train_dataset_unorm)
 
     # Get training set stats
     trainloader_unorm = torch.utils.data.DataLoader(
         train_dataset_unorm, batch_size=batch_size, shuffle=True, num_workers=0)
+    print("VALIDATING SETS ARE CORRECT")
+    print(len(train_dataset_unorm))
+    print(len(trainloader_unorm))
     mean_train, std_train = get_dataset_stats(trainloader_unorm)
 
     if verbose:
@@ -204,11 +206,11 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
         print("Mean:", mean_train)
         print("Std:", std_train)
 
-    torchvision_transform = transforms.Compose([transforms.Resize((224, 224)),
+    torchvision_transform = transforms.Compose([transforms.Resize((640, 640)),
                                                 transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
                                                 transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
 
-    torchvision_transform_test = transforms.Compose([transforms.Resize((224, 224)),
+    torchvision_transform_test = transforms.Compose([transforms.Resize((640, 640)),
                                                      transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
 
     # Get the train/val/test loaders
