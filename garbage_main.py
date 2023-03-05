@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=100, help='total epochs')
     parser.add_argument('--val_split', type=float, default=0.2, help='val split')
     parser.add_argument('--test_split', type=float, default=0.2, help='test split')
-    parser.add_argument('--best_model_path', type=str, default=1e-4, help='best model path')
+    parser.add_argument('--best_model_path', type=str, default="best_model", help='best model path')
     parser.add_argument('--images_path', type=str, default=1e-4, help='path to images')
     parser.add_argument('--verbose', type=bool, default=True, help='verbose debugging flag')
     parser.add_argument('--transfer_learning', type=bool, default=True, help='transfer learning flag')

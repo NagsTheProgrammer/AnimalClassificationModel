@@ -108,19 +108,22 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     print("LISTING DATA")
     #print(os.listdir("dataset"))
     input_dir = "dataset/temp/cats"
-    images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
+    #images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
+    images = [os.path.join(input_dir, image) for image in os.listdir(input_dir)]
     cat_images = np.array(images)  # transform to numpy
     cat_labels = ['cat']*len(cat_images)
 
     # Dogs
     input_dir2 = "dataset/temp/dogs"
-    images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
+    #images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
+    images2 = [os.path.join(input_dir2, image) for image in os.listdir(input_dir2)]
     dog_images = np.array(images2)  # transform to numpy
     dog_labels = ['dog']*len(dog_images)
 
     # Panda
     input_dir3 = "dataset/temp/panda"
-    images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
+    #images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
+    images3 = [os.path.join(input_dir3, image) for image in os.listdir(input_dir3)]
     panda_images = np.array(images3)  # transform to numpy
     panda_labels = ['panda']*len(panda_images)
 
@@ -196,9 +199,7 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     # Get training set stats
     trainloader_unorm = torch.utils.data.DataLoader(
         train_dataset_unorm, batch_size=batch_size, shuffle=True, num_workers=0)
-    print("VALIDATING SETS ARE CORRECT")
-    print(len(train_dataset_unorm))
-    print(len(trainloader_unorm))
+    
     mean_train, std_train = get_dataset_stats(trainloader_unorm)
 
     if verbose:
