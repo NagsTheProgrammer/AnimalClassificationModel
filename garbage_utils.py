@@ -105,24 +105,31 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     # Listing the data
     # Cats
-    input_dir = "/dataset/temp/cats"
+    print("LISTING DATA")
+    #print(os.listdir("dataset"))
+    input_dir = "dataset/temp/cats"
     images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
     cat_images = np.array(images)  # transform to numpy
     cat_labels = ['cat']*len(cat_images)
 
     # Dogs
-    input_dir2 = "/dataset/temp/dogs"
+    input_dir2 = "dataset/temp/dogs"
     images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
     dog_images = np.array(images2)  # transform to numpy
     dog_labels = ['dog']*len(dog_images)
 
     # Panda
-    input_dir3 = "/dataset/temp/panda"
+    input_dir3 = "dataset/temp/panda"
     images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
     panda_images = np.array(images3)  # transform to numpy
     panda_labels = ['panda']*len(panda_images)
 
-    images2 =
+    # Appending lists
+    images2 = np.append(cat_images,dog_images)
+    images = np.append(images2, panda_images)
+    labels = cat_labels + dog_labels + panda_labels
+    print(len(labels))
+    labels = np.array(labels)
 
     # Formatting the labs as ints
     classes = np.unique(labels).flatten()
@@ -133,7 +140,7 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
         labels_int[labels == jj] = ii
 
     if verbose:
-        print("Number of images in the dataset:", images.size)
+        print("Number of images in the dataset:", len(images))
         for ii, jj in enumerate(classes):
             print("Number of images in class ", jj,
                   ":", (labels_int == ii).sum())
@@ -166,8 +173,11 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     if verbose:
         print("Train set:", train_images.size)
+        #print(train_labels)
         print("Val set:", val_images.size)
+        #print(val_labels)
         print("Test set:", test_images.size)
+        #print(test_labels)
 
     # Representing the sets as dictionaries
     train_set = {"X": train_images, "Y": train_labels}
@@ -182,6 +192,7 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     # Datasets
     train_dataset_unorm = TorchVisionDataset(
         train_set, transform=torchvision_transform_train)
+    print(train_dataset_unorm)
 
     # Get training set stats
     trainloader_unorm = torch.utils.data.DataLoader(
