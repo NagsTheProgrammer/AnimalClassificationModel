@@ -9,6 +9,8 @@ import glob
 from sklearn.model_selection import StratifiedShuffleSplit
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 
 # Function to get the statistics of a dataset
@@ -286,16 +288,27 @@ def test(net, testloader, device):
 
     correct = 0
     total = 0
+    print(len(testloader))
     # since we're not training, we don't need to calculate the gradients for our outputs
     with torch.no_grad():
         for data in testloader:
             images, labels = data[0].to(device), data[1].to(device)
+            print("images:")
+            print(images[0].size())
+            print(images[0].permute(1,2,0))
+            image = torch.Tensor.cpu(images[0])
+            plt.imshow(image.permute(1,2,0))
+            print("labels:")
+            print(labels)
             # calculate outputs by running images through the network
             outputs = net(images)
             # the class with the highest energy is what we choose as prediction
             _, predicted = torch.max(outputs.data, 1)
+            print("predicted:")
+            print(predicted)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+            
 
     print(
         f'Accuracy of the network on the test images: {100 * correct / total} %')

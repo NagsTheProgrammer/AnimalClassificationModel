@@ -8,8 +8,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--learning_rate', type=float, default=1e-4, help='initial learning rate')
-    parser.add_argument('--batch_size', type=int, default=2, help='batch size,  number of images in each iteration during training')
-    parser.add_argument('--epochs', type=int, default=100, help='total epochs')
+    parser.add_argument('--batch_size', type=int, default=1, help='batch size,  number of images in each iteration during training')
+    parser.add_argument('--epochs', type=int, default=20, help='total epochs')
     parser.add_argument('--val_split', type=float, default=0.2, help='val split')
     parser.add_argument('--test_split', type=float, default=0.2, help='test split')
     parser.add_argument('--best_model_path', type=str, default="best_model", help='best model path')
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
 
     # Create our model
-    net = GarbageModel(4, (3,224,224), args.transfer_learning)
+    net = GarbageModel(3, (3,640,640), args.transfer_learning)
     net.to(device)
 
     train_validate(net, trainloader, valloader, args.epochs, args.batch_size,\
