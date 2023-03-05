@@ -5,6 +5,7 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import transforms
+from torchvision import models
 from PIL import Image
 
 
@@ -36,7 +37,6 @@ class ObjectModel(nn.Module):
     def __init__(self, num_classes, input_shape, transfer=False):
         super().__init__()
 
-        self.transfer = transfer
         self.num_classes = num_classes
         self.input_shape = input_shape
 
