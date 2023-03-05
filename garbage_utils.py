@@ -10,7 +10,6 @@ from sklearn.model_selection import StratifiedShuffleSplit
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
 
-
 # Function to get the statistics of a dataset
 def get_dataset_stats(data_loader):
     mean = 0.
