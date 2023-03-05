@@ -1,6 +1,3 @@
-# Tutorial
-# Import libraries
-
 import torch
 from torch.utils.data import Dataset
 import torch.nn as nn
@@ -38,7 +35,6 @@ learning_rate = 1e-5
 gamma_val = 0.9
 best_loss = 1e+20
 
-# Util section
 class TorchVisionDataset(Dataset):
     def __init__(self, data_dic, transform=None):
         self.file_paths = data_dic["X"]
@@ -58,7 +54,20 @@ class TorchVisionDataset(Dataset):
             image = self.transform(image)
         return image, label
 
-class ObjectModel(nn.Module):
+# import torch.nn as nn
+# import torch.nn.functional as F
+#
+# class Model(nn.Module):
+#     def __init__(self):
+#         super().__init__()
+#         self.conv1 = nn.Conv2d(1, 20, 5)
+#         self.conv2 = nn.Conv2d(20, 20, 5)
+#
+#     def forward(self, x):
+#         x = F.relu(self.conv1(x))
+#         return F.relu(self.conv2(x))
+
+class AnimalModel(nn.Module):
     def __init__(self, num_classes, input_shape, transfer=False):
         super().__init__()
 
@@ -68,6 +77,16 @@ class ObjectModel(nn.Module):
 
         # transfer learning if pretrained=True
         self.feature_extractor = models.resnet18(pretrained=transfer)
+
+        # Load the pre-trained YOLOv5 model
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+
+        # Freeze all layers in the model
+        for param in model.parameters():
+            param.requires_grad = False
+
+        # Replace the final layer to output the correct number of classes
+        model.model[-1].c = num_classes
 
         if self.transfer:
             # layers are frozen by using eval()
@@ -95,187 +114,63 @@ class ObjectModel(nn.Module):
 
         return x
 
-# Check if GPU is available
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-if verboseFLAG:
-    print(device)
+# Main function call
+if __name__ == "__main__":
 
-# -- DATA PREP --
-# Instantiate arguments, prepare data
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--learning_rate', type=float, default=1e-4, help='initial learning rate')
+    # parser.add_argument('--batch_size', type=int, default=2,
+    #                     help='batch size,  number of images in each iteration during training')
+    # parser.add_argument('--epochs', type=int, default=100, help='total epochs')
+    # parser.add_argument('--val_split', type=float, default=0.2, help='val split')
+    # parser.add_argument('--test_split', type=float, default=0.2, help='test split')
+    # parser.add_argument('--best_model_path', type=str, help='best model path')
+    # parser.add_argument('--images_path', type=str, help='path to images')
+    # parser.add_argument('--verbose', type=bool, default=True, help='verbose debugging flag')
+    # parser.add_argument('--transfer_learning', type=bool, default=False, help='transfer learning flag')
+    #
+    # args = parser.parse_args()
 
-# Getting dataset
-rootDir = os.path.dirname(os.path.abspath(__file__))
-imagesPATH = os.path.join(rootDir, f'dataset\smallDataset\\images\\')
-labelsPATH = os.path.join(rootDir, f'dataset\smallDataset\\annotations\\')
+    # Check if GPU is available
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-# Getting annotations from XML files
-# *** to delete
-# args.images_path="path to images" #path to root folder
-# images = glob.glob(imagesPATH)
+    # Assuming that we are on a CUDA machine, this should print a CUDA device:
+    if verboseFLAG:
+        print(device)
 
-# -- LABELS --
-labels = ['cereal', 'chocolate_milk', 'heineken', 'iron_man', 'medicine', 'milk_bottle', 'milk_box', 'monster',
-          'purple_juice', 'red_juice', 'shampoo', 'tea_box', 'yellow_juice']
+    trainloader, valloader, testloader = \
+        get_data_loaders(imagesPATH, valSplit, testSplit, \
+                         batch_size=batchSize, verbose=verboseFLAG)
 
-# Experimental setup train val test split
-# Data augmentation
-# Data loaders
-trainloader, valloader, testloader = \
-    get_data_loaders(imagesPATH, valSplit, testSplit, \
-                     batch_size=batchSize, verbose=verboseFLAG)
+    # Create our model
+    net = AnimalModel(3, (3, 224, 224), transferLearningFLAG) # **change input model shape to match input dataset
+    net.to(device)
 
-# Create our model
-net = ObjectModel(4, (3, 224, 224), transferLearningFLAG)
-net.to(device)
+    train_validate(net, trainloader, valloader, epochs, batchSize, \
+                   learningRate, modelBenchmarkPATH, device, verboseFLAG)
 
-train_validate(net, trainloader, valloader, epochs, batchSize, \
-               learningRate, modelBenchmarkPATH, device, verboseFLAG)
+    net.load_state_dict(torch.load(modelBenchmarkPATH))
 
-net.load_state_dict(torch.load(modelBenchmarkPATH))
-
-test(net, testloader, device)
-
-# The default image size used by the authors of YOLOv5 during training is 640x640 pixels.
-# So, they recommend that the trained YOLOv5 model be used on new input images that are resized to a multiple
-# of 32 like 320x320, 352x352, 384x384,…. for efficiency.
-# So, the required dimensions depend on the input image size used during training and the input images used
-# for detection should be resized to the same size used during training which is preferably a multiple of 32.
-
-# Transfer learning Michael will do this
-# Add and train new top/predictor
-# Fine-tune learning layers
-# Load the pre-trained YOLOv5 model
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-
-# Freeze all layers in the model
-for param in model.parameters():
-    param.requires_grad = False
-
-# Replace the final layer to output the correct number of classes
-model.model[-1].c = numClasses
-
-# Loss and metrics, Callbacks and tracking
-# Loss: categorical cross-entropy
-# Metrics: accuracy, sensitivity, specificity, confusion matrix, training and inference time
-# Early stopping/patience
-# Model benchmark
-# Learning rate scheduler
-# Weights and biases (train/val loss)
-criterion = nn.CrossEntropyLoss()  # 1e-5 and 1e-1
-optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
-scheduler = ExponentialLR(optimizer, gamma=gamma_val)  # ExponentialLR decays the learning rate of each parameter group
+    test(net, testloader, device)
 
 
-# by gamma every epoch, this is from the garbage classifier
+# Function to get the statistics of a dataset
+def get_dataset_stats(data_loader):
+    mean = 0.
+    std = 0.
+    nb_samples = 0.
+    for data in data_loader:
+        data = data[0]  # Get the images to compute the stgatistics
+        batch_samples = data.size(0)
+        data = data.view(batch_samples, data.size(1), -1)
+        mean += data.mean(2).sum(0)
+        std += data.std(2).sum(0)
+        nb_samples += batch_samples
 
-# Hyperparameters
-# Batch size
-# Number of epochs
-# Learning rate
+    mean /= nb_samples
+    std /= nb_samples
+    return mean, std
 
-
-def find_optimal_lr(model, criterion, optimizer, dataloader, num_iter=100, start_lr=1e-7, end_lr=10, device='cpu'):
-    # Set up the learning rate scheduler to gradually increase the learning rate over time
-    lr_lambda = lambda x: 10 ** (x / (num_iter - 1) * (end_lr - start_lr) + start_lr)
-    lr_scheduler = LambdaLR(optimizer, lr_lambda)
-
-    # Set the model to training mode
-    model.train()
-
-    # Run the learning rate range test
-    losses = []
-    lrs = []
-    for i, (inputs, labels) in enumerate(dataloader):
-        if i >= num_iter:
-            break
-
-        inputs = inputs.to(device)
-        labels = labels.to(device)
-
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-        lr_scheduler.step()
-
-        losses.append(loss.item())
-        lrs.append(lr_scheduler.get_lr())
-
-    # Find the optimal learning rate
-    optimal_lr = lrs[losses.index(min(losses))]
-
-    plt.xscale('log')
-    plt.plot(lrs, losses)
-    plt.xlabel('Learning rate')
-    plt.ylabel('Loss')
-    plt.show()
-
-    return optimal_lr, min(losses)
-
-
-lr, loss = find_optimal_lr(model, criterion, optimizer, dataloader)
-
-
-# Train
-
-
-# Test
-# Run prediction on your test set
-# Extract relevant metrics
-# Measure inference time
-
-# train_validate
-def train_validate(net, trainloader, valloader, epochs, batch_size,
-                   learning_rate, best_model_path, device, verbose):
-    best_loss = 1e+20
-    for epoch in range(epochs):  # loop over the dataset multiple times
-
-        # Loss function and optimizer
-        criterion = nn.CrossEntropyLoss()  # Loss function
-        optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
-        scheduler = ExponentialLR(optimizer, gamma=0.9)
-
-        # Training Loop
-        train_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data[0].to(device), data[1].to(device)
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
-            # forward + backward + optimize
-            outputs = net(inputs)
-
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            train_loss += loss.item()
-        print(f'{epoch + 1},  train loss: {train_loss / i:.3f},', end=' ')
-        scheduler.step()
-
-        val_loss = 0
-        # since we're not training, we don't need to calculate the gradients for our outputs
-        with torch.no_grad():
-            for i, data in enumerate(valloader, 0):
-                # get the inputs; data is a list of [inputs, labels]
-                inputs, labels = data[0].to(device), data[1].to(device)
-                outputs = net(inputs)
-                loss = criterion(outputs, labels)
-
-                val_loss += loss.item()
-            print(f'val loss: {val_loss / i:.3f}')
-
-            # Save best model
-            if val_loss < best_loss:
-                print("Saving model")
-                torch.save(net.state_dict(), best_model_path)
-                best_loss = val_loss
-
-    print('Finished Training')
-
-# get_data_loaders returns
 def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=True):
     """
     These function generates the data loaders for our problem. It assumes paths are
@@ -324,8 +219,8 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     test_labels = labels_int[test_index]
 
     # Splitting the data in train and val sets
-    val_size = int(val_split*images.size)
-    val_split = val_size/dev_images.size
+    val_size = int(val_split * images.size)
+    val_split = val_size / dev_images.size
     sss2 = StratifiedShuffleSplit(
         n_splits=1, test_size=val_split, random_state=10)
     sss2.get_n_splits(dev_images, dev_labels)
@@ -349,7 +244,8 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     # Transforms
     torchvision_transform_train = transforms.Compose([transforms.Resize((224, 224)),
-                                                      transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
+                                                      transforms.RandomHorizontalFlip(),
+                                                      transforms.RandomVerticalFlip(),
                                                       transforms.ToTensor()])
 
     # Datasets
@@ -368,10 +264,12 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     torchvision_transform = transforms.Compose([transforms.Resize((224, 224)),
                                                 transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
-                                                transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
+                                                transforms.ToTensor(),
+                                                transforms.Normalize(mean=mean_train, std=std_train)])
 
     torchvision_transform_test = transforms.Compose([transforms.Resize((224, 224)),
-                                                     transforms.ToTensor(), transforms.Normalize(mean=mean_train, std=std_train)])
+                                                     transforms.ToTensor(),
+                                                     transforms.Normalize(mean=mean_train, std=std_train)])
 
     # Get the train/val/test loaders
     train_dataset = TorchVisionDataset(
@@ -389,9 +287,16 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 
     return trainloader, valloader, testloader
 
+# for performing transfer learning steps:
+# 1. load pre-traine model
+# 2. freeze top layers
+# 3. add top layer (prediction layer)
+def transfer_model(net):
+    net.load_state_dict(torch.load(r'/yoloV3/yolov3.weights')) # ** check path to make sure this works properly
+    net.eval()
+
 def train_validate(net, trainloader, valloader, epochs, batch_size,
                    learning_rate, best_model_path, device, verbose):
-
     best_loss = 1e+20
     for epoch in range(epochs):  # loop over the dataset multiple times
 
@@ -438,3 +343,21 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
                 best_loss = val_loss
 
     print('Finished Training')
+
+
+def test(net, testloader, device):
+    correct = 0
+    total = 0
+    # since we're not training, we don't need to calculate the gradients for our outputs
+    with torch.no_grad():
+        for data in testloader:
+            images, labels = data[0].to(device), data[1].to(device)
+            # calculate outputs by running images through the network
+            outputs = net(images)
+            # the class with the highest energy is what we choose as prediction
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    print(
+        f'Accuracy of the network on the test images: {100 * correct / total} %')
