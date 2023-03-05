@@ -2,12 +2,13 @@ import torch
 import torchvision
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim.lr_scheduler import ExponentialLR
+from torch.optim.lr_scheduler import ExponentialLR, LambdaLR
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import transforms
 from torchvision import models
 from PIL import Image
-
+import matplotlib.pyplot as plt
+import glob
 
 verboseFLAG = True
 
@@ -33,25 +34,12 @@ class TorchVisionDataset(Dataset):
         return image, label
 
 
-class ObjectModel(nn.Module):
-    def __init__(self, num_classes, input_shape, transfer=False):
+class AnimalModel(nn.Module):
+    def __init__(self, num_classes, input_shape):
         super().__init__()
 
         self.num_classes = num_classes
         self.input_shape = input_shape
-
-        # transfer learning if pretrained=True
-        self.feature_extractor = models.resnet18(pretrained=transfer)
-
-        if self.transfer:
-            # layers are frozen by using eval()
-            self.feature_extractor.eval()
-            # freeze params
-            for param in self.feature_extractor.parameters():
-                param.requires_grad = False
-
-        n_features = self._get_conv_output(self.input_shape)
-        self.classifier = nn.Linear(n_features, num_classes)
 
     def _get_conv_output(self, shape):
         batch_size = 1
@@ -69,24 +57,68 @@ class ObjectModel(nn.Module):
 
         return x
 
+
+def find_optimal_lr(model, criterion, optimizer, dataloader, num_iter=100, start_lr=1e-7, end_lr=10, device='cpu'):
+    # Set up the learning rate scheduler to gradually increase the learning rate over time
+    lr_lambda = lambda x: 10 ** (x / (num_iter - 1) * (end_lr - start_lr) + start_lr)
+    lr_scheduler = LambdaLR(optimizer, lr_lambda)
+
+    # Set the model to training mode
+    model.train()
+
+    # Run the learning rate range test
+    losses = []
+    lrs = []
+    for i, (inputs, labels) in enumerate(dataloader):
+        if i >= num_iter:
+            break
+
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        lr_scheduler.step()
+
+        losses.append(loss.item())
+        lrs.append(lr_scheduler.get_lr())
+
+    # Find the optimal learning rate
+    optimal_lr = lrs[losses.index(min(losses))]
+
+    plt.xscale('log')
+    plt.plot(lrs, losses)
+    plt.xlabel('Learning rate')
+    plt.ylabel('Loss')
+    plt.show()
+
+    return optimal_lr, min(losses)
+
+
 # Define hyperparameters (Example)
 batch_size = 2
 epochs = 20
 patience = 5
-start_lr = 1e-6
-end_lr = 10
-num_classes = 13
+start_lr = 1e-5
+end_lr = 1
+num_classes = 3
 
 # Define device
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device_name = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+device = torch.device(device_name)
 if verboseFLAG:
     print(device)
 
-# Define transforms
+# Define transforms (Resizing and data augmentation)
 transform = transforms.Compose([
     transforms.Resize((640, 640)),
+    transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
     transforms.ToTensor(),
 ])
+
 
 # Load the pre-trained YOLOv5 model
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
@@ -104,10 +136,14 @@ optimizer = optim.Adam(model.parameters(), lr=start_lr)
 scheduler = ExponentialLR(optimizer, gamma=0.9)
 
 # Define the dataset and dataloaders
-train_dataset = CustomDataset(images_dir='path/to/train/images', labels_dir='path/to/train/labels', transform=transform)
-val_dataset = CustomDataset(images_dir='path/to/val/images', labels_dir='path/to/val/labels', transform=transform)
+paths = {'path/to/train/images', 'path/to/train/labels'}
+train_dataset = TorchVisionDataset(paths, transform=transform)
+val_dataset = TorchVisionDataset(paths, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size)
+
+# Define learning rate
+learning_rate, loss = find_optimal_lr(model, criterion, optimizer, train_loader, num_iter=100, start_lr=start_lr, end_lr=end_lr, device=device_name)
 
 # Train the model
 best_loss = float('inf')
