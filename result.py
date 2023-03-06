@@ -9,6 +9,9 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import Dataset
 from torchvision import transforms, models
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 
 # Vision Dataset
 class CustomDataset(Dataset):
@@ -197,23 +200,6 @@ def get_data_loaders(val_split, test_split, batch_size=32, verbose=True):
     return train_loader, val_loader, test_loader
 
 
-# Validate best parameters
-
-def validate(net, valloader, device):
-    criterion = nn.CrossEntropyLoss()  # Loss function
-    val_loss = 0
-    # since we're not training, we don't need to calculate the gradients for our outputs
-    with torch.no_grad():
-        for i, data in enumerate(valloader, 0):
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data[0].to(device), data[1].to(device)
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-
-            val_loss += loss.item()
-    return val_loss / i
-
-
 # Stats generation convenience function
 
 def get_dataset_stats(data_loader):
@@ -249,10 +235,11 @@ def define_hyperparameters_and_train_model(best_model_path, device, verbose, pat
             for learning_rate in learning_rate_range:
                 train_loader, val_loader, test_loader = get_data_loaders(args.val_split, args.test_split)
                 current_model = AnimalModel(args.num_classes,
-                                    (args.num_classes, args.unified_image_width, args.unified_image_height))
+                                            (args.num_classes, args.unified_image_width, args.unified_image_height))
                 current_model.to(device)
                 val_loss = train_validate_with_hyperparameters(current_model, train_loader, val_loader, epochs,
-                                                               learning_rate, best_model_path, device, patience, verbose)
+                                                               learning_rate, best_model_path, device, patience,
+                                                               verbose)
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     best_hyperparameters = (epochs, batch_size, learning_rate)
@@ -371,7 +358,8 @@ if __name__ == "__main__":
         print("Chosen device:", device)
 
     # Model training and saving
-    best_batch_size = define_hyperparameters_and_train_model(args.best_model_path, device, args.verbose, args.patience)[1]
+    best_batch_size = define_hyperparameters_and_train_model(args.best_model_path, device, args.verbose, args.patience)[
+        1]
 
     # Get test dataloader
     test_loader = get_data_loaders(args.val_split, args.test_split, batch_size=best_batch_size, verbose=args.verbose)[2]
