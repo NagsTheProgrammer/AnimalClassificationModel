@@ -10,6 +10,7 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import Dataset
 from torchvision import transforms, models
 import warnings
+
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
@@ -36,20 +37,16 @@ class CustomDataset(Dataset):
 
 # Custom nn Module
 class AnimalModel(nn.Module):
-    def __init__(self, num_classes, input_shape, transfer=False):
+    def __init__(self, num_classes, input_shape, freeze=True):
         super().__init__()
 
-        self.transfer = transfer
         self.num_classes = num_classes
         self.input_shape = input_shape
 
-        # transfer learning if pretrained=True
-        self.feature_extractor = models.densenet161(pretrained=transfer)
+        self.feature_extractor = models.densenet161()
 
-        if self.transfer:
-            # layers are frozen by using eval()
+        if freeze:
             self.feature_extractor.eval()
-            # freeze params
             for param in self.feature_extractor.parameters():
                 param.requires_grad = False
 
@@ -237,6 +234,12 @@ def get_dataset_stats(data_loader):
 # Model training convenience function
 
 def define_hyperparameters_and_train_model(best_model_path, device, verbose, patience, epoch, batch, rate):
+    # Using the computing clusters provided by the instructor,
+    # these are the hyperparameters we found were the most optimal after the grid search.
+    # Here is an example of ranges we could use to find the best hyperparameters using the following grid search:
+    # => epochs_range = [10, 20, 30, 40, 50]
+    # => batch_size_range = [2, 4, 8, 16, 32, 48, 64]
+    # => learning_rate_range = [0.0001, 0.001, 0.01, 0.1, 1]
     epochs_range = [epoch]
     batch_size_range = [batch]
     learning_rate_range = [rate]
@@ -250,7 +253,8 @@ def define_hyperparameters_and_train_model(best_model_path, device, verbose, pat
             for learning_rate in learning_rate_range:
                 train_loader, val_loader, test_loader = get_data_loaders(args.val_split, args.test_split)
                 current_model = AnimalModel(args.num_classes,
-                                            (args.num_classes, args.unified_image_width, args.unified_image_height))
+                                            (args.num_classes, args.unified_image_width, args.unified_image_height),
+                                            freeze=True)
                 current_model.to(device)
                 val_loss = train_validate_with_hyperparameters(current_model, train_loader, val_loader, epochs,
                                                                learning_rate, best_model_path, device, patience,
@@ -297,7 +301,12 @@ def train_validate_with_hyperparameters(observed_model, train_loader, val_loader
             optimizer.step()
 
             train_loss += loss.item()
-        print(f'{epoch + 1},  train loss: {train_loss / i:.3f},', end=' ')
+
+        if verbose:
+            try:
+                print(f'{epoch + 1},  train loss: {train_loss / i:.3f},', end=' ')
+            except ZeroDivisionError:
+                pass
 
         scheduler.step()
 
@@ -311,11 +320,16 @@ def train_validate_with_hyperparameters(observed_model, train_loader, val_loader
                 loss = criterion(outputs, labels)
 
                 val_loss += loss.item()
-            print(f'val loss: {val_loss / i:.3f}')
+            if verbose:
+                try:
+                    print(f'val loss: {val_loss / i:.3f}')
+                except ZeroDivisionError:
+                    pass
 
             # Save best model
             if val_loss < best_loss:
-                print("Saving model")
+                if verbose:
+                    print("Saving model")
                 torch.save(observed_model.state_dict(), best_model_path)
                 best_loss = val_loss
                 counter = 0
@@ -361,12 +375,12 @@ if __name__ == "__main__":
     parser.add_argument('--val_split', type=float, default=0.2, help='val split')
     parser.add_argument('--test_split', type=float, default=0.2, help='test split')
     parser.add_argument('--best_model_path', type=str, default="best_model", help='best model path')
-    parser.add_argument('--verbose', type=bool, default=True, help='verbose debugging flag')
     parser.add_argument('--transfer_learning', type=bool, default=True, help='transfer learning flag')
     parser.add_argument('--num_classes', type=int, default=3, help='Number of classes in dataset')
     parser.add_argument('--unified_image_height', type=int, default=224, help='transfer learning flag')
     parser.add_argument('--unified_image_width', type=int, default=224, help='transfer learning flag')
     parser.add_argument('--patience', type=int, default=5, help='transfer learning flag')
+    parser.add_argument('--verbose', type=bool, default=False, help='verbose debugging flag')
 
     args = parser.parse_args()
 
@@ -376,14 +390,22 @@ if __name__ == "__main__":
         print("Chosen device:", device)
 
     # Model training and saving
-    best_batch_size = define_hyperparameters_and_train_model(args.best_model_path, device, args.verbose, args.patience, args.epochs, args.batch_size, args.learning_rate)[
-        1]
+    best_nbr_epochs, best_batch_size, best_learning_rate = define_hyperparameters_and_train_model(args.best_model_path,
+                                                                                                  device, args.verbose,
+                                                                                                  args.patience,
+                                                                                                  args.epochs,
+                                                                                                  args.batch_size,
+                                                                                                  args.learning_rate)
 
     # Get test dataloader
-    test_loader = get_data_loaders(args.val_split, args.test_split, batch_size=best_batch_size, verbose=args.verbose)[2]
+    train_loader, val_loader, test_loader = get_data_loaders(args.val_split, args.test_split,
+                                                             batch_size=best_batch_size, verbose=args.verbose)
 
     # Loading best model
-    model = AnimalModel(args.num_classes, (args.num_classes, args.unified_image_width, args.unified_image_height))
+    model = AnimalModel(args.num_classes, (args.num_classes, args.unified_image_width, args.unified_image_height),
+                        freeze=False)
+    train_validate_with_hyperparameters(model, train_loader, val_loader, best_nbr_epochs,
+                                        best_learning_rate, args.best_model_path, device, args.patience, args.verbose)
     model.load_state_dict(torch.load(args.best_model_path))
 
     # Best model testing

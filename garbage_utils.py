@@ -252,7 +252,7 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
 def train_validate(net, trainloader, valloader, epochs, batch_size,
                    learning_rate, best_model_path, device, verbose):
     best_loss = 1e+20
-    for epoch in range(20):  # loop over the dataset multiple times
+    for j in range(20):  # loop over the dataset multiple times
 
         # Loss function and optimizer
         criterion = nn.CrossEntropyLoss()  # Loss function
@@ -275,7 +275,7 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
             optimizer.step()
 
             train_loss += loss.item()
-        print(f'{i + 1},  train loss: {train_loss / i:.3f},', end=' ')
+        print(f'{j + 1},  train loss: {train_loss / i:.3f},', end=' ')
         scheduler.step()
 
         val_loss = 0
