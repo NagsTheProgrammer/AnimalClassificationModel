@@ -275,7 +275,7 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
             optimizer.step()
 
             train_loss += loss.item()
-        print(f'{20 + 1},  train loss: {train_loss / i:.3f},', end=' ')
+        print(f'{i + 1},  train loss: {train_loss / i:.3f},', end=' ')
         scheduler.step()
 
         val_loss = 0

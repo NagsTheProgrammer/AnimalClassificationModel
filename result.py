@@ -83,21 +83,36 @@ def get_data_loaders(val_split, test_split, batch_size=32, verbose=True):
     # Listing the data
     # Cats
     print("LISTING DATA")
-    input_dir = "dataset/temp/cats"
+    input_dir = "dataset/cats"
     images = [os.path.join(input_dir, image) for image in os.listdir(input_dir)]
-    cat_images = np.array(images)  # transform to numpy
+    three_channels = []
+    for filename in images:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    cat_images = np.array(three_channels)  # transform to numpy
     cat_labels = ['cat'] * len(cat_images)
 
     # Dogs
-    input_dir2 = "dataset/temp/dogs"
+    input_dir2 = "dataset/dogs"
     images2 = [os.path.join(input_dir2, image) for image in os.listdir(input_dir2)]
-    dog_images = np.array(images2)  # transform to numpy
+    three_channels = []
+    for filename in images2:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    dog_images = np.array(three_channels)  # transform to numpy
     dog_labels = ['dog'] * len(dog_images)
 
     # Panda
-    input_dir3 = "dataset/temp/panda"
+    input_dir3 = "dataset/panda"
     images3 = [os.path.join(input_dir3, image) for image in os.listdir(input_dir3)]
-    panda_images = np.array(images3)  # transform to numpy
+    three_channels = []
+    for filename in images3:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    panda_images = np.array(three_channels)  # transform to numpy
     panda_labels = ['panda'] * len(panda_images)
 
     # Appending lists
@@ -282,6 +297,7 @@ def train_validate_with_hyperparameters(observed_model, train_loader, val_loader
             optimizer.step()
 
             train_loss += loss.item()
+        print(f'{epoch + 1},  train loss: {train_loss / i:.3f},', end=' ')
 
         scheduler.step()
 
@@ -295,9 +311,11 @@ def train_validate_with_hyperparameters(observed_model, train_loader, val_loader
                 loss = criterion(outputs, labels)
 
                 val_loss += loss.item()
+            print(f'val loss: {val_loss / i:.3f}')
 
             # Save best model
             if val_loss < best_loss:
+                print("Saving model")
                 torch.save(observed_model.state_dict(), best_model_path)
                 best_loss = val_loss
                 counter = 0
