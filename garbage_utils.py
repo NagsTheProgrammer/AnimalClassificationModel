@@ -108,24 +108,39 @@ def get_data_loaders(images_path, val_split, test_split, batch_size=32, verbose=
     # Cats
     print("LISTING DATA")
     # print(os.listdir("dataset"))
-    input_dir = "dataset/temp/cats"
+    input_dir = "dataset/cats"
     # images = [Image.open(os.path.join(input_dir, image)) for image in os.listdir(input_dir)]  # load
     images = [os.path.join(input_dir, image) for image in os.listdir(input_dir)]
-    cat_images = np.array(images)  # transform to numpy
+    three_channels = []
+    for filename in images:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    cat_images = np.array(three_channels)  # transform to numpy
     cat_labels = ['cat'] * len(cat_images)
 
     # Dogs
-    input_dir2 = "dataset/temp/dogs"
+    input_dir2 = "dataset/dogs"
     # images2 = [Image.open(os.path.join(input_dir2, image)) for image in os.listdir(input_dir2)]  # load
     images2 = [os.path.join(input_dir2, image) for image in os.listdir(input_dir2)]
-    dog_images = np.array(images2)  # transform to numpy
+    three_channels = []
+    for filename in images2:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    dog_images = np.array(three_channels)  # transform to numpy
     dog_labels = ['dog'] * len(dog_images)
 
     # Panda
-    input_dir3 = "dataset/temp/panda"
+    input_dir3 = "dataset/panda"
     # images3 = [Image.open(os.path.join(input_dir3, image)) for image in os.listdir(input_dir3)]  # load
     images3 = [os.path.join(input_dir3, image) for image in os.listdir(input_dir3)]
-    panda_images = np.array(images3)  # transform to numpy
+    three_channels = []
+    for filename in images3:
+        img = Image.open(filename)
+        if img.mode == 'RGB':
+            three_channels.append(filename)
+    panda_images = np.array(three_channels)  # transform to numpy
     panda_labels = ['panda'] * len(panda_images)
 
     # Appending lists
@@ -287,24 +302,23 @@ def train_validate(net, trainloader, valloader, epochs, batch_size,
 def test(net, testloader, device):
     correct = 0
     total = 0
-    print(len(testloader))
     # since we're not training, we don't need to calculate the gradients for our outputs
     with torch.no_grad():
         for data in testloader:
             images, labels = data[0].to(device), data[1].to(device)
-            print("images:")
-            print(images[0].size())
-            print(images[0].permute(1,2,0))
-            image = torch.Tensor.cpu(images[0])
-            plt.imshow(image.permute(1,2,0))
-            print("labels:")
-            print(labels)
+            # print("images:")
+            # print(images[0].size())
+            # print(images[0].permute(1,2,0))
+            # image = torch.Tensor.cpu(images[0])
+            # plt.imshow(image.permute(1,2,0))
+            # print("labels:")
+            # print(labels)
             # calculate outputs by running images through the network
             outputs = net(images)
             # the class with the highest energy is what we choose as prediction
             _, predicted = torch.max(outputs.data, 1)
-            print("predicted:")
-            print(predicted)
+            # print("predicted:")
+            # print(predicted)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
             
