@@ -10,7 +10,6 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torch.utils.data import Dataset
 from torchvision import transforms, models
 
-
 # Vision Dataset
 class CustomDataset(Dataset):
     def __init__(self, file_paths, labels, transform=None):
@@ -42,7 +41,7 @@ class AnimalModel(nn.Module):
         self.input_shape = input_shape
 
         # transfer learning if pretrained=True
-        self.feature_extractor = models.resnet18(pretrained=transfer)
+        self.feature_extractor = models.densenet161(pretrained=transfer)
 
         if self.transfer:
             # layers are frozen by using eval()
@@ -149,10 +148,11 @@ def get_data_loaders(val_split, test_split, batch_size=32, verbose=True):
         print("Test set:", test_images.size)
 
     # Transforms
-    torchvision_transform_train = transforms.Compose([transforms.Resize((args.unified_image_width, args.unified_image_height)),
-                                                      transforms.RandomHorizontalFlip(),
-                                                      transforms.RandomVerticalFlip(),
-                                                      transforms.ToTensor()])
+    torchvision_transform_train = transforms.Compose(
+        [transforms.Resize((args.unified_image_width, args.unified_image_height)),
+         transforms.RandomHorizontalFlip(),
+         transforms.RandomVerticalFlip(),
+         transforms.ToTensor()])
 
     # Datasets
     train_dataset_unorm = CustomDataset(
@@ -169,14 +169,16 @@ def get_data_loaders(val_split, test_split, batch_size=32, verbose=True):
         print("Mean:", mean_train)
         print("Std:", std_train)
 
-    torchvision_transform = transforms.Compose([transforms.Resize((args.unified_image_width, args.unified_image_height)),
-                                                transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
-                                                transforms.ToTensor(),
-                                                transforms.Normalize(mean=mean_train, std=std_train)])
+    torchvision_transform = transforms.Compose(
+        [transforms.Resize((args.unified_image_width, args.unified_image_height)),
+         transforms.RandomHorizontalFlip(), transforms.RandomVerticalFlip(),
+         transforms.ToTensor(),
+         transforms.Normalize(mean=mean_train, std=std_train)])
 
-    torchvision_transform_test = transforms.Compose([transforms.Resize((args.unified_image_width, args.unified_image_height)),
-                                                     transforms.ToTensor(),
-                                                     transforms.Normalize(mean=mean_train, std=std_train)])
+    torchvision_transform_test = transforms.Compose(
+        [transforms.Resize((args.unified_image_width, args.unified_image_height)),
+         transforms.ToTensor(),
+         transforms.Normalize(mean=mean_train, std=std_train)])
 
     # Get the train/val/test loaders
     train_dataset = CustomDataset(
@@ -193,33 +195,6 @@ def get_data_loaders(val_split, test_split, batch_size=32, verbose=True):
         test_dataset, batch_size=batch_size, num_workers=num_workers)
 
     return train_loader, val_loader, test_loader
-
-
-# Find patience and learning rate
-
-def find_best_lr(trainloader, valloader, lr_values):
-    best_loss = float('inf')
-    best_lr = None
-    for lr in lr_values:
-        # Model creation
-        net = AnimalModel(3, (3, 640, 640), args.transfer_learning)
-        net.to(device)
-
-        # Model training and saving
-        train_validate(net, trainloader, valloader, args.epochs, args.batch_size, lr, args.best_model_path,
-                       device, args.verbose, args.patience)
-
-        # Loading best model
-        net.load_state_dict(torch.load(args.best_model_path))
-
-        # Best model validation
-        val_loss = validate(net, valloader, device)
-
-        if val_loss < best_loss:
-            best_loss = val_loss
-            best_lr = lr
-
-    return best_lr
 
 
 # Validate best parameters
@@ -260,67 +235,93 @@ def get_dataset_stats(data_loader):
 
 # Model training convenience function
 
-def train_validate(net, trainloader, valloader, epochs, batch_size,
-                   learning_rate, best_model_path, device, verbose, patience):
-    best_loss = 1e+20
+def define_hyperparameters_and_train_model(best_model_path, device, verbose, patience):
+    epochs_range = [10, 20, 30, 40, 50]
+    batch_size_range = [2, 4, 8, 16, 32, 48, 64]
+    learning_rate_range = [0.0001, 0.001, 0.01, 0.1, 1]
+
+    # Perform the grid search
+    best_val_loss = float('inf')
+    best_hyperparameters = None
+
+    for epochs in epochs_range:
+        for batch_size in batch_size_range:
+            for learning_rate in learning_rate_range:
+                train_loader, val_loader, test_loader = get_data_loaders(args.val_split, args.test_split)
+                current_model = AnimalModel(args.num_classes,
+                                    (args.num_classes, args.unified_image_width, args.unified_image_height))
+                current_model.to(device)
+                val_loss = train_validate_with_hyperparameters(current_model, train_loader, val_loader, epochs,
+                                                               learning_rate, best_model_path, device, patience, verbose)
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_hyperparameters = (epochs, batch_size, learning_rate)
+                    torch.save(current_model.state_dict(), best_model_path)
+
+    if verbose:
+        print("Best nbr epochs:", best_hyperparameters[0])
+        print("Best batch size:", best_hyperparameters[1])
+        print("Best learning rate:", best_hyperparameters[2])
+
+    return best_hyperparameters
+
+
+def train_validate_with_hyperparameters(observed_model, train_loader, val_loader, epochs,
+                                        learning_rate, best_model_path, device, patience, verbose):
+    best_loss = float("inf")
     gamma = 0.9
     counter = 0
 
-    for epoch in range(epochs):  # loop over the dataset multiple times
+    # Loss function and optimizer
+    criterion = nn.CrossEntropyLoss()  # Loss function
+    optimizer = torch.optim.AdamW(observed_model.parameters(), lr=learning_rate)
+    scheduler = ExponentialLR(optimizer, gamma=gamma)
 
-        # Loss function and optimizer
-        criterion = nn.CrossEntropyLoss()  # Loss function
-        optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
-        scheduler = ExponentialLR(optimizer, gamma=gamma)
+    for epoch in range(epochs):  # loop over the dataset multiple times
 
         # Training Loop
         train_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
+        for i, data in enumerate(train_loader, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data[0].to(device), data[1].to(device)
             # zero the parameter gradients
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs)
+            outputs = observed_model(inputs)
 
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
             train_loss += loss.item()
-        if verbose:
-            print(f'{epochs + 1},  train loss: {train_loss / i:.3f},', end=' ')
+
         scheduler.step()
 
         val_loss = 0
         # since we're not training, we don't need to calculate the gradients for our outputs
         with torch.no_grad():
-            for i, data in enumerate(valloader, 0):
+            for i, data in enumerate(val_loader, 0):
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data[0].to(device), data[1].to(device)
-                outputs = net(inputs)
+                outputs = observed_model(inputs)
                 loss = criterion(outputs, labels)
 
                 val_loss += loss.item()
-            if verbose:
-                print(f'val loss: {val_loss / i:.3f}')
 
             # Save best model
             if val_loss < best_loss:
-                if verbose:
-                    print("Saving model")
-                torch.save(net.state_dict(), best_model_path)
+                torch.save(observed_model.state_dict(), best_model_path)
                 best_loss = val_loss
+                counter = 0
             else:
                 counter += 1
                 if counter >= patience:
                     if verbose:
                         print(f'Validation loss has not improved for {patience} epochs. Stopping training.')
-                    return
+                    break
 
-    if verbose:
-        print('Finished Training')
+    return val_loss / (i + 1)
 
 
 # Test convenience function
@@ -346,7 +347,6 @@ def test(net, testloader, device):
 # Main
 
 if __name__ == "__main__":
-
     # Constants definition
     parser = argparse.ArgumentParser()
     parser.add_argument('--learning_rate', type=float, default=1e-4, help='initial learning rate')
@@ -359,38 +359,26 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', type=bool, default=True, help='verbose debugging flag')
     parser.add_argument('--transfer_learning', type=bool, default=True, help='transfer learning flag')
     parser.add_argument('--num_classes', type=int, default=3, help='Number of classes in dataset')
-    parser.add_argument('--unified_image_height', type=int, default=640, help='transfer learning flag')
-    parser.add_argument('--unified_image_width', type=int, default=640, help='transfer learning flag')
+    parser.add_argument('--unified_image_height', type=int, default=224, help='transfer learning flag')
+    parser.add_argument('--unified_image_width', type=int, default=224, help='transfer learning flag')
     parser.add_argument('--patience', type=int, default=5, help='transfer learning flag')
 
     args = parser.parse_args()
 
     # Device choice
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
     if args.verbose:
         print("Chosen device:", device)
 
-    # Get dataloaders
-    trainloader, valloader, testloader = \
-        get_data_loaders(args.val_split, args.test_split, batch_size=args.batch_size, verbose=args.verbose)
-
-    # Grid search for optimal learning rate
-    lr_values = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1]
-    best_lr = find_best_lr(trainloader, valloader, lr_values)
-    if args.verbose:
-        print("Best learning rate:", best_lr)
-
-    # Model creation
-    net = AnimalModel(args.num_classes, (args.num_classes, args.unified_image_width, args.unified_image_height), args.transfer_learning)
-    net.to(device)
-
     # Model training and saving
-    train_validate(net, trainloader, valloader, args.epochs, args.batch_size, best_lr, args.best_model_path,
-                   device, args.verbose, args.patience)
+    best_batch_size = define_hyperparameters_and_train_model(args.best_model_path, device, args.verbose, args.patience)[1]
+
+    # Get test dataloader
+    test_loader = get_data_loaders(args.val_split, args.test_split, batch_size=best_batch_size, verbose=args.verbose)[2]
 
     # Loading best model
-    net.load_state_dict(torch.load(args.best_model_path))
+    model = AnimalModel(args.num_classes, (args.num_classes, args.unified_image_width, args.unified_image_height))
+    model.load_state_dict(torch.load(args.best_model_path))
 
     # Best model testing
-    test(net, testloader, device)
+    test(model, test_loader, device)
